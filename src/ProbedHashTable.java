@@ -154,23 +154,37 @@ public class ProbedHashTable<K,V> implements HashTable<K,V> {
   /**
    * Get the value for a particular key.
    */
+  // @Override
+  // public V get(K key) {
+  //   int index = find(key);
+  //   @SuppressWarnings("unchecked")
+  //   Pair<K,V> pair = (Pair<K,V>) pairs[index];
+  //   if (pair == null) {
+  //     if (REPORT_BASIC_CALLS && (reporter != null)) {
+  //       reporter.report("get(" + key + ") failed");
+  //     } // if reporter != null
+  //     throw new IndexOutOfBoundsException("Invalid key: " + key);
+  //   } else {
+  //     if (REPORT_BASIC_CALLS && (reporter != null)) {
+  //       reporter.report("get(" + key + ") => " + pair.value());
+  //     } // if reporter != null
+  //     return pair.value();
+  //   } // get
+  // } // get(K)
+
+
   @Override
   public V get(K key) {
-    int index = find(key);
-    @SuppressWarnings("unchecked")
-    Pair<K,V> pair = (Pair<K,V>) pairs[index];
-    if (pair == null) {
-      if (REPORT_BASIC_CALLS && (reporter != null)) {
-        reporter.report("get(" + key + ") failed");
-      } // if reporter != null
-      throw new IndexOutOfBoundsException("Invalid key: " + key);
-    } else {
-      if (REPORT_BASIC_CALLS && (reporter != null)) {
-        reporter.report("get(" + key + ") => " + pair.value());
-      } // if reporter != null
-      return pair.value();
-    } // get
-  } // get(K)
+      int index = getPairIndex(key);
+      if (index != -1) {
+          @SuppressWarnings("unchecked")
+          Pair<K, V> pair = (Pair<K, V>) pairs[index];
+          return pair.value();
+      } else {
+          throw new IndexOutOfBoundsException("Invalid key: " + key);
+      }
+  }
+
 
   /**
    * Iterate the keys in some order.
@@ -179,40 +193,78 @@ public class ProbedHashTable<K,V> implements HashTable<K,V> {
     return MiscUtils.transform(this.iterator(), (pair) -> pair.key());
   } // keys()
 
-  /**
-   * Remove a key/value pair.
-   */
+  // /**
+  //  * Remove a key/value pair.
+  //  */
+  // @Override
+  // public V remove(K key) {
+  //   // STUB
+  //   return null;
+  // } // remov
+  
   @Override
   public V remove(K key) {
-    // STUB
-    return null;
-  } // remove(K)
+      int index = getPairIndex(key);
+      if (index != -1) {
+          @SuppressWarnings("unchecked")
+          Pair<K, V> pair = (Pair<K, V>) pairs[index];
+          V value = pair.value();
+          pairs[index] = null;
+          size--;
+          return value;
+      } else {
+          return null;
+      }
+  }
+
+
 
   /**
    * Set a value.
    */
-  @SuppressWarnings("unchecked")
-  public V set(K key, V value) {
-    V result = null;
-    // If there are too many entries, expand the table.
-    if (this.size > (this.pairs.length * LOAD_FACTOR)) {
-      expand();
-    } // if there are too many entries
-    // Find out where the key belongs and put the pair there.
-    int index = find(key);
-    if (this.pairs[index] != null) {
-      result = ((Pair<K,V>) this.pairs[index]).value();
-    } // if
-    this.pairs[index] = new Pair<K,V>(key, value);
-    // Report activity, if appropriate
-    if (REPORT_BASIC_CALLS && (reporter != null)) {
-      reporter.report("pairs[" + index + "] = " + key + ":" + value);
-    } // if reporter != null
-    // Note that we've incremented the size.
-    ++this.size;
-    // And we're done
-    return result;
-  } // set(K,V)
+  // @SuppressWarnings("unchecked")
+  // public V set(K key, V value) {
+  //   V result = null;
+  //   // If there are too many entries, expand the table.
+  //   if (this.size > (this.pairs.length * LOAD_FACTOR)) {
+  //     expand();
+  //   } // if there are too many entries
+  //   // Find out where the key belongs and put the pair there.
+  //   int index = find(key);
+  //   if (this.pairs[index] != null) {
+  //     result = ((Pair<K,V>) this.pairs[index]).value();
+  //   } // if
+  //   this.pairs[index] = new Pair<K,V>(key, value);
+  //   // Report activity, if appropriate
+  //   if (REPORT_BASIC_CALLS && (reporter != null)) {
+  //     reporter.report("pairs[" + index + "] = " + key + ":" + value);
+  //   } // if reporter != null
+  //   // Note that we've incremented the size.
+  //   ++this.size;
+  //   // And we're done
+  //   return result;
+  // } // set(K,V)
+
+
+   @SuppressWarnings("unchecked")
+    @Override
+    public V set(K key, V value) {
+        if (containsKey(key)) {
+            int index = getPairIndex(key);
+            Pair<K, V> pair = (Pair<K, V>) pairs[index];
+            V oldValue = pair.value();
+            pair.setValue(value);
+            return oldValue;
+        } else {
+            if (this.size > (this.pairs.length * LOAD_FACTOR)) {
+                expand();
+            }
+            int index = findEmptyIndex(key);
+            pairs[index] = new Pair<K, V>(key, value);
+            size++;
+            return null;
+        }
+    }
 
   /**
    * Get the size of the dictionary - the number of values stored.
@@ -302,27 +354,84 @@ public class ProbedHashTable<K,V> implements HashTable<K,V> {
   /**
    * Expand the size of the table.
    */
+  // void expand() {
+  //   // Figure out the size of the new table.
+  //   int newSize = 2 * this.pairs.length + rand.nextInt(10);
+  //   if (REPORT_BASIC_CALLS && (reporter != null)) {
+  //     reporter.report("Expanding to " + newSize + " elements.");
+  //   } // if reporter != null
+  //   // Create a new table of that size.
+  //   Object[] newPairs = new Object[newSize];
+  //   // Move all pairs from the old table to their appropriate
+  //   // location in the new table.
+  //   // STUB
+  //   // And update our pairs
+  // } // expand()
+
+
+
   void expand() {
-    // Figure out the size of the new table.
     int newSize = 2 * this.pairs.length + rand.nextInt(10);
     if (REPORT_BASIC_CALLS && (reporter != null)) {
-      reporter.report("Expanding to " + newSize + " elements.");
-    } // if reporter != null
-    // Create a new table of that size.
+        reporter.report("Expanding to " + newSize + " elements.");
+    }
     Object[] newPairs = new Object[newSize];
-    // Move all pairs from the old table to their appropriate
-    // location in the new table.
-    // STUB
-    // And update our pairs
-  } // expand()
+    for (int i = 0; i < this.pairs.length; i++) {
+        if (pairs[i] != null) {
+            Pair<K, V> pair = (Pair<K, V>) pairs[i];
+            int newIndex = findEmptyIndex(pair.key(), newPairs);
+            newPairs[newIndex] = pair;
+        }
+    }
+    this.pairs = newPairs;
+}
 
-  /**
-   * Find the index of the entry with a given key. If there is no such entry,
-   * return the index of an entry we can use to store that key.
-   */
-  int find(K key) {
+
+
+int find(K key) {
     return Math.abs(key.hashCode()) % this.pairs.length;
-  } // find(K)
+}
 
-} // class ProbedHashTable<K,V>
+int findEmptyIndex(K key) {
+    int index = find(key);
+    while (pairs[index] != null) {
+        index = (index + 1) % pairs.length; // Linear probing
+    }
+    return index;
+}
+
+int findEmptyIndex(K key, Object[] array) {
+    int index = find(key) % array.length;
+    while (array[index] != null) {
+        index = (index + 1) % array.length; // Linear probing
+    }
+    return index;
+}
+
+int getPairIndex(K key) {
+    int startIndex = find(key);
+    int index = startIndex;
+    do {
+        if (pairs[index] != null) {
+            @SuppressWarnings("unchecked")
+            Pair<K, V> pair = (Pair<K, V>) pairs[index];
+            if (pair.key().equals(key)) {
+                return index;
+            }
+        }
+        index = (index + 1) % pairs.length; // Linear probing
+    } while (index != startIndex);
+    return -1;
+}
+}
+
+//   /**
+//    * Find the index of the entry with a given key. If there is no such entry,
+//    * return the index of an entry we can use to store that key.
+//    */
+//   int find(K key) {
+//     return Math.abs(key.hashCode()) % this.pairs.length;
+//   } // find(K)
+
+// } // class ProbedHashTable<K,V>
 

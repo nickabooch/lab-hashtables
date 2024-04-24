@@ -3,7 +3,7 @@ import java.io.PrintWriter;
 /**
  * Simple hash tables.
  */
-public interface HashTable<K,V> extends SimpleMap<K,V>, Iterable<Pair<K,V>> {
+public interface HashTable<K,V> extends SimpleMap<K,V>{
 
   /**
    * Clear the whole table.

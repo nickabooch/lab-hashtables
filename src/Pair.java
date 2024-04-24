@@ -74,4 +74,6 @@ public class Pair<K,V> {
   public V value() {
     return this.value;
   } // value()
+
+public void setValue(V value2) {}
 } // Pair<K,V>
