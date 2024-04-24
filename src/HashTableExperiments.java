@@ -45,6 +45,19 @@ public class HashTableExperiments {
    */
   public static void repeatedSetExpt(PrintWriter pen,
       HashTable<String,String> htab) {
+        htab.reportBasicCalls(true);
+        htab.set("alpha", "alpha");
+        htab.dump(pen);
+        htab.set("beta", "beta");
+        htab.dump(pen);
+        htab.set("bravo", "bravo");
+        htab.dump(pen);
+        htab.set("beta", "bravo");
+        htab.dump(pen);
+        htab.reportBasicCalls(false);
+        getExpt(pen, htab, "beta");
+        pen.println();
+
     // STUB
   } // repeatedSetExpt(PrintWriter, HashTable)
 
