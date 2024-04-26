@@ -153,7 +153,7 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
    * Get the value for a particular key.
    */
   @Override
-  public V get(K key) {
+  public V get(K key) { 
     int index = find(key);
     @SuppressWarnings("unchecked")
     ArrayList<Pair<K,V>> alist = (ArrayList<Pair<K,V>>) buckets[index];
@@ -166,11 +166,18 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
       Pair<K,V> pair = alist.get(0);
       if (REPORT_BASIC_CALLS && (reporter != null)) {
         reporter.report("get(" + key + ") => " + pair.value());
-      } // if reporter != null
-      return pair.value();
+      } else {
+        for (Pair<K,V> pair2 : alist){
+          if(pair2.key().equals(key)){
+          return pair.value();
+          }
+        throw new IndexOutOfBoundsException("Key: " + key + " does not match expected value/key " + pair.value());
+      }
+        }
+        return null;
     } // get
   } // get(K)
-
+  
   /**
    * Iterate the keys in some order.
    */
@@ -188,7 +195,7 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
   } // remove(K)
 
   /**
-   * Set a value.
+   * Set a value. 
    */
   @SuppressWarnings("unchecked")
   public V set(K key, V value) {
@@ -198,10 +205,17 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
       expand();
     } // if there are too many entries
 
+
     // Find out where the key belongs and put the pair there.
     int index = find(key);
     ArrayList<Pair<K,V>> alist = (ArrayList<Pair<K,V>>) this.buckets[index];
-    // Special case: Nothing there yet
+    // key is already in the bucket
+    for (Pair<K,V> pair : alist){
+      if(pair.key().equals(key)){
+        pair.setValue(value);
+      }
+    }
+    // else if key is not in the bucket
     if (alist == null) {
       alist = new ArrayList<Pair<K,V>>();
       this.buckets[index] = alist;
@@ -218,6 +232,7 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
     return result;
   } // set(K,V)
 
+  
   /**
    * Get the size of the dictionary - the number of values stored.
    */

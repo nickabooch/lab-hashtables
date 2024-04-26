@@ -35,6 +35,17 @@ public class ChainedHashTableExperiments {
    HashTableExperiments.matchingSetExpt(pen, htab);
    HashTableExperiments.multipleSetExpt(pen, htab);
    HashTableExperiments.removeExpt(pen, htab);
+   htab.reportBasicCalls(true);
+   htab.set("alpha", "alpha");
+   htab.dump(pen);
+   htab.set("beta", "beta");
+   htab.dump(pen);
+   htab.set("bravo", "bravo");
+   htab.dump(pen);
+   htab.set("beta", "max");
+   htab.dump(pen);
+   htab.reportBasicCalls(false);
+   pen.println();
   } // main(String[])
 
 } // class ChainedHashTableExperiments
