@@ -8,7 +8,8 @@ import java.util.function.BiConsumer;
  * A simple implementation of hash tables.
  *
  * @author Samuel A. Rebelsky
- * @author Your Name Here
+ * @author Rommin Adl
+ * @author Vincent Yao
  */
 public class ChainedHashTable<K,V> implements HashTable<K,V> {
 
