@@ -55,7 +55,6 @@ public class HashTableExperiments {
         htab.set("beta", "bravo");
         htab.dump(pen);
         htab.reportBasicCalls(false);
-        getExpt(pen, htab, "beta");
         pen.println();
 
     // STUB
