@@ -208,14 +208,10 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
 
     // Find out where the key belongs and put the pair there.
     int index = find(key);
+
     ArrayList<Pair<K,V>> alist = (ArrayList<Pair<K,V>>) this.buckets[index];
-    // key is already in the bucket
-    for (Pair<K,V> pair : alist){
-      if(pair.key().equals(key)){
-        pair.setValue(value);
-      }
-    }
-    // else if key is not in the bucket
+        
+    // if key is not in the bucket
     if (alist == null) {
       alist = new ArrayList<Pair<K,V>>();
       this.buckets[index] = alist;
@@ -228,11 +224,18 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
       reporter.report("adding '" + key + ":" + value + "' to bucket " + index);
     } // if reporter != null
 
+    // if key is already in the bucket
+    for (Pair<K,V> pair : alist){
+      if(pair.key().equals(key)){
+        pair.setValue(value);
+      }
+    }
+
     // And we're done
     return result;
   } // set(K,V)
 
-  
+
   /**
    * Get the size of the dictionary - the number of values stored.
    */
